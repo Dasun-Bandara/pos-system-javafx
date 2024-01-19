@@ -5,6 +5,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
+
 public class SearchOrdersFormController {
     public AnchorPane root;
     public TextField txtSearch;
@@ -13,6 +15,7 @@ public class SearchOrdersFormController {
     public void tblOrders_OnMouseClicked(MouseEvent mouseEvent) {
     }
 
-    public void navigateToHome(MouseEvent mouseEvent) {
+    public void navigateToHome(MouseEvent mouseEvent) throws IOException {
+        MainFormController.navigateToMain(root);
     }
 }

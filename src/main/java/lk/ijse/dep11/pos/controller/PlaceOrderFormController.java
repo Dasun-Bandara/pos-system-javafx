@@ -9,6 +9,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
+
 public class PlaceOrderFormController {
     public AnchorPane root;
     public JFXTextField txtCustomerName;
@@ -25,7 +27,8 @@ public class PlaceOrderFormController {
     public Label lblTotal;
     public JFXButton btnPlaceOrder;
 
-    public void navigateToHome(MouseEvent mouseEvent) {
+    public void navigateToHome(MouseEvent mouseEvent) throws IOException {
+        MainFormController.navigateToMain(root);
     }
 
     public void btnAdd_OnAction(ActionEvent actionEvent) {

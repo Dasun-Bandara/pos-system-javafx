@@ -7,6 +7,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
+
 public class ManageItemFormController {
     public AnchorPane root;
     public JFXButton btnAddNew;
@@ -18,7 +20,8 @@ public class ManageItemFormController {
     public JFXButton btnDelete;
     public TableView tblItems;
 
-    public void navigateToHome(MouseEvent mouseEvent) {
+    public void navigateToHome(MouseEvent mouseEvent) throws IOException {
+        MainFormController.navigateToMain(root);
     }
 
     public void btnAddNew_OnAction(ActionEvent actionEvent) {
