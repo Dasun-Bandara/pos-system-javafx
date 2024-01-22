@@ -121,10 +121,6 @@ public class PlaceOrderFormController {
         enablePlaceOrderButton();
     }
 
-    public void txtQty_OnAction(ActionEvent actionEvent) {
-
-    }
-
     public void btnPlaceOrder_OnAction(ActionEvent actionEvent) throws IOException {
         try {
             OrderDataAccess.saveOrder(lblId.getText().replace("Order ID: ", "").strip(),

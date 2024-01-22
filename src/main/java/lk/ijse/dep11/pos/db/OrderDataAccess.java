@@ -1,8 +1,11 @@
 package lk.ijse.dep11.pos.db;
 
+import lk.ijse.dep11.pos.tm.Order;
 import lk.ijse.dep11.pos.tm.OrderItem;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDataAccess {
@@ -12,6 +15,7 @@ public class OrderDataAccess {
     private static final PreparedStatement STM_INSERT_ORDER;
     private static final PreparedStatement STM_INSERT_ORDER_ITEM;
     private static final PreparedStatement STM_UPDATE_STOCK;
+    private static final PreparedStatement STM_FIND;
 
     static {
         try {
@@ -28,6 +32,16 @@ public class OrderDataAccess {
                     .prepareStatement("SELECT * FROM order_item WHERE item_code = ?");
             STM_GET_LAST_ID = connection
                     .prepareStatement("SELECT id FROM \"order\" ORDER BY id DESC FETCH FIRST ROWS ONLY");
+            STM_FIND = connection.prepareStatement("SELECT o.*, c.name, CAST(order_total.total AS DECIMAL(8,2))\n" +
+                    "FROM \"order\" AS o\n" +
+                    "         INNER JOIN customer AS c ON o.customer_id = c.id\n" +
+                    "        INNER JOIN\n" +
+                    "(SELECT o.id, SUM(qty * unit_price) AS total\n" +
+                    "FROM \"order\" AS o\n" +
+                    "         INNER JOIN order_item AS oi ON oi.order_id = o.id GROUP BY o.id) AS order_total\n" +
+                    "ON o.id = order_total.id\n" +
+                    "WHERE o.id ILIKE ? OR CAST(o.date AS VARCHAR(20)) LIKE ? OR o.customer_id ILIKE ? OR c.name ILIKE ? " +
+                    "ORDER BY o.id");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -78,5 +92,21 @@ public class OrderDataAccess {
     public static boolean existsOrderByItemCode(String code) throws SQLException {
         STM_EXISTS_BY_ITEM_CODE.setString(1, code);
         return STM_EXISTS_BY_ITEM_CODE.executeQuery().next();
+    }
+    public static List<Order> findOrders(String query) throws SQLException {
+        for(int i = 1; i <= 4; i++) {
+            STM_FIND.setString(i, "%".concat(query).concat("%"));
+        }
+        ResultSet rst = STM_FIND.executeQuery();
+        List<Order> orderList = new ArrayList<>();
+        while (rst.next()){
+            String orderId = rst.getString("id");
+            Date orderDate = rst.getDate("date");
+            String customerId = rst.getString("customer_id");
+            String customerName = rst.getString("name");
+            BigDecimal orderTotal = rst.getBigDecimal("total");
+            orderList.add(new Order(orderId, orderDate.toString(), customerId, customerName, orderTotal));
+        }
+        return orderList;
     }
 }
