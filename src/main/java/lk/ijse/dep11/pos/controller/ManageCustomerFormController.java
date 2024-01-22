@@ -12,6 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import lk.ijse.dep11.pos.db.CustomerDataAccess;
+import lk.ijse.dep11.pos.db.OrderDataAccess;
 import lk.ijse.dep11.pos.db.SingleConnectionDataSource;
 import lk.ijse.dep11.pos.tm.Customer;
 
@@ -108,11 +109,16 @@ public class ManageCustomerFormController {
 
     public void btnDelete_OnAction(ActionEvent actionEvent) {
         try {
-            CustomerDataAccess.deleteCustomer(txtCustomerId.getText());
-            ObservableList<Customer> customerList = tblCustomers.getItems();
-            Customer selectedCustomer = tblCustomers.getSelectionModel().getSelectedItem();
-            customerList.remove(selectedCustomer);
-            if (customerList.isEmpty()) btnAddNew.fire();
+            if (OrderDataAccess.existsOrderByCustomerId(txtCustomerId.getText())){
+                new Alert(Alert.AlertType.ERROR,
+                        "Unable to delete this customer, already associated with an order").show();
+            }else{
+                CustomerDataAccess.deleteCustomer(txtCustomerId.getText());
+                ObservableList<Customer> customerList = tblCustomers.getItems();
+                Customer selectedCustomer = tblCustomers.getSelectionModel().getSelectedItem();
+                customerList.remove(selectedCustomer);
+                if (customerList.isEmpty()) btnAddNew.fire();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
